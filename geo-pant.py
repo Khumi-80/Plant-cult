@@ -1,13 +1,12 @@
 import streamlit as st
 from datetime import datetime
-import geopy
-from geopy.geocoders import Nominatim
 
-# Placeholder data for soil types and average temperatures
-# Real implementation should use appropriate APIs or datasets
+# Placeholder data for soil types and average temperatures based on District and Tehsil
 soil_data = {
-    '33.7075, 73.2112': 'Silt Loam',
-    '34.0, 74.0': 'Clay Loam',  # Add more coordinates and soil types as needed
+    ('Islamabad', 'Rural'): 'Silt Loam',
+    ('Rawalpindi', 'Gujar Khan'): 'Clay Loam',
+    ('Lahore', 'Shalimar'): 'Sandy Loam',
+    # Add more District and Tehsil combinations as needed
 }
 
 temperature_data = {
@@ -41,10 +40,9 @@ vegetables_data = {
     'December': ['Peas', 'Garlic', 'Onions'],
 }
 
-# Function to get soil type based on coordinates (example logic)
-def get_soil_type(lat, lon):
-    key = f'{round(lat, 4)}, {round(lon, 4)}'
-    return soil_data.get(key, 'Unknown')
+# Function to get soil type based on District and Tehsil
+def get_soil_type(district, tehsil):
+    return soil_data.get((district, tehsil), 'Unknown')
 
 # Function to get average temperature for the current month
 def get_avg_temperature():
@@ -57,20 +55,20 @@ def get_vegetables():
     return vegetables_data.get(current_month, 'Data not available')
 
 # Streamlit app interface
-st.title("Soil, Temperature, and Vegetable Suggestions")
+st.title("Soil, Temperature, and Vegetable Suggestions by District and Tehsil")
 
-# User input: coordinates
-st.write("Enter the coordinates of your location:")
-lat = st.number_input("Latitude", format="%.6f", value=33.7075)
-lon = st.number_input("Longitude", format="%.6f", value=73.2112)
+# User input: District and Tehsil
+st.write("Enter the District and Tehsil of your location:")
+district = st.selectbox("District", options=['Islamabad', 'Rawalpindi', 'Lahore'])  # Add more districts
+tehsil = st.selectbox("Tehsil", options=['Rural', 'Gujar Khan', 'Shalimar'])  # Add corresponding tehsils
 
 # Get soil type, temperature, and vegetables
 if st.button("Get Information"):
-    soil_type = get_soil_type(lat, lon)
+    soil_type = get_soil_type(district, tehsil)
     avg_temp = get_avg_temperature()
     vegetables = get_vegetables()
 
     # Display results
-    st.write(f"**Soil Type**: {soil_type}")
+    st.write(f"**Soil Type in {tehsil}, {district}**: {soil_type}")
     st.write(f"**Average Temperature (for this month)**: {avg_temp} °C")
     st.write(f"**Vegetables to Plant this Month**: {', '.join(vegetables)}")
